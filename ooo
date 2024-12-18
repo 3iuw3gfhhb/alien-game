@@ -1,0 +1,207 @@
+// Area 51: The Cosmic Truth (Khan Academy Version)
+
+// Global Variables
+let currentStage = 0; // Track game stages
+let playerName = ""; // Store player's name
+let choices = []; // Array to store choice buttons
+
+// Button Class for Choices
+class Button {
+    constructor(x, y, width, height, text, onClick) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.text = text;
+        this.onClick = onClick;
+    }
+
+    draw() {
+        fill(200);
+        rect(this.x, this.y, this.width, this.height, 5);
+        fill(0);
+        textSize(16);
+        textAlign(CENTER, CENTER);
+        text(this.text, this.x + this.width / 2, this.y + this.height / 2);
+    }
+
+    handleClick(mx, my) {
+        if (
+            mx > this.x &&
+            mx < this.x + this.width &&
+            my > this.y &&
+            my < this.y + this.height
+        ) {
+            this.onClick();
+        }
+    }
+}
+
+// Reset Choices
+function clearChoices() {
+    choices = [];
+}
+
+// Draw Choices
+function drawChoices() {
+    for (let button of choices) {
+        button.draw();
+    }
+}
+
+// Start Game
+function startGame() {
+    background(0);
+    fill(255);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text("Welcome to Area 51: The Cosmic Truth!", 200, 50);
+    textSize(16);
+    text(
+        "In the year 2000, a curious kid hears rumors about Area 51 and aliens.",
+        200,
+        100
+    );
+    text("Your mission is to uncover the truth.", 200, 130);
+    text("Click below to start typing your name:", 200, 180);
+    fill(255, 255, 255, 50);
+    rect(100, 220, 200, 30, 5);
+    fill(0);
+    text(playerName || "Click to type...", 200, 235);
+
+    clearChoices();
+    choices.push(
+        new Button(100, 300, 200, 40, "Next", () => {
+            if (playerName.trim() !== "") {
+                currentStage = 1;
+                displayStage1();
+            }
+        })
+    );
+}
+
+// Display Stage 1
+function displayStage1() {
+    background(0);
+    fill(255);
+    textSize(16);
+    textAlign(CENTER, CENTER);
+    text(
+        "You hear whispers at school about Area 51 and aliens. Do you:",
+        200,
+        50
+    );
+    clearChoices();
+    choices.push(
+        new Button(100, 100, 200, 40, "Go to the library", () => {
+            currentStage = 2;
+            displayStage2();
+        })
+    );
+    choices.push(
+        new Button(100, 160, 200, 40, "Ask friends for info", () => {
+            currentStage = 3;
+            displayStage3();
+        })
+    );
+}
+
+// Display Stage 2
+function displayStage2() {
+    background(0);
+    fill(255);
+    textSize(16);
+    textAlign(CENTER, CENTER);
+    text("You find books about UFOs and Area 51. Do you:", 200, 50);
+    clearChoices();
+    choices.push(
+        new Button(100, 100, 200, 40, "Read 'The Cosmic Mystery'", () => {
+            endGame(true);
+        })
+    );
+    choices.push(
+        new Button(100, 160, 200, 40, "Read conspiracy theories online", () => {
+            endGame(true);
+        })
+    );
+}
+
+// Display Stage 3
+function displayStage3() {
+    background(0);
+    fill(255);
+    textSize(16);
+    textAlign(CENTER, CENTER);
+    text(
+        "Your friends tell you about a late-night radio show. Do you:",
+        200,
+        50
+    );
+    clearChoices();
+    choices.push(
+        new Button(100, 100, 200, 40, "Listen to the radio show", () => {
+            endGame(true);
+        })
+    );
+    choices.push(
+        new Button(100, 160, 200, 40, "Dismiss and ask questions", () => {
+            endGame(true);
+        })
+    );
+}
+
+// End Game
+function endGame(success) {
+    background(0);
+    fill(255);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    if (success) {
+        text(
+            `Congratulations, ${playerName}! You've uncovered the cosmic truth!`,
+            200,
+            100
+        );
+        text(
+            "Aliens might be out there, but they're not on Earth. Keep exploring the universe!",
+            200,
+            150
+        );
+    } else {
+        text("Game Over. Try again to uncover the truth.", 200, 100);
+    }
+    clearChoices();
+    choices.push(
+        new Button(100, 200, 200, 40, "Play Again", () => {
+            currentStage = 0;
+            playerName = "";
+            startGame();
+        })
+    );
+}
+
+// Mouse Click Handler
+mouseClicked = function () {
+    for (let button of choices) {
+        button.handleClick(mouseX, mouseY);
+    }
+};
+
+// Keyboard Input Handler
+keyTyped = function () {
+    if (currentStage === 0) {
+        if (key === "\n") {
+            return; // Ignore enter key
+        }
+        playerName += key;
+    }
+};
+
+// Draw Loop
+draw = function () {
+    if (currentStage === 0) {
+        startGame();
+    } else {
+        drawChoices();
+    }
+};
